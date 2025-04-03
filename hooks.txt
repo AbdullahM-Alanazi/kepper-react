@@ -1,0 +1,114 @@
+
+# Hooks can't be defined based on a condition. 
+if () {useEffect;} // Invalid. 
+# Hooks can use condition(s). 
+useEffect(() => {
+    if() {//Do somthing} // Valid
+}) 
+
+
+set function is async function. Getting hold of the preValue is importent when doing : 
+    - CallBack queue. 
+    - Multiple promises.
+    * Beacause the assigned value of the default state <=> The one in the global envirenoment. 
+
+    // Best Practice: 
+        - Hold the preValue. Do things. 
+        - Ex.: setFunction(
+            (preValue) => {
+                // Do things 
+                return an expression. !importent. 
+            } 
+        )
+                                        *** 👇 *** 
+    **  Return undefined from the arrow function will result -> Breaking the whole state. **
+
+
+###
+useState: rerender the component when an event occure, no default behaviour. 
+useEffect: side effects in function components, usually focus on state outside the component. 
+    - By default it will run every time the component is rendered. 
+###
+
+Importent note is mentioned 5.04, indicate that: 
+useEffect(  effect: React.EffectCallback, 
+        deps?: React.DependencyList || undefined): void 
+
+DependencyList -> On what updated value to useEffect. If undefined,the EffectCallback will be triggered
+on each time we `rerender` the component. 
+
+Trick to override this default behaviour ,is by passing an empty array for the DependencyList -> (Run once).
+
+useEffect -> object.addEvenListner(event,   
+useEffect will be called once the page is rendered (1st time), and will add the addEvenListner. 
+Once that event occured, the setState will ba called to rerender the component, 
+Resulting in adding the addEvenListner each time we trigger the event. 
+which lead to a memory leak!. 
+
+The returned function from the useEffect callback is cleanup function, will be called on : 
+    1- after the second rerender, 
+        i- the cleanup function will be invoked first. 
+        ii- The useEffect will be invoked.
+    2- toggleing the component: after removing the component from the DOM, the empty DependencyList is usless.
+        using the cleanup function will prevent memory leak.
+
+# since the useEffect can be used once, useEffect can be used to display a proper message while fetching data, 
+combination of useEffect + useState. 
+useEffect -> it's callback function will trigger the callback function of useState.
+// *
+
+useRef -> 
+    - Def*: attach a watcher object with the property of {current} to a node, and preserve the value of the node.
+        - Preserve the value. 
+        - Does not trigger rerendering. 
+        - Targeitng the DOM nodes. 
+
+useReducer -> 
+
+[state, dispatch] = useReducer(reducer:function, defaultState: any);
+
+dispatch(action: Object) => will call the reducer function. 
+// Common conveintion for the action object: 
+    - {type?: String any} -> Type of the action to be made. 
+    - {payload: any} -> to update. 
+
+reducer = (state, action) => {
+    return state; // Must
+} 
+
+/
+/
+# Avoid Prop Drilling (Passing functions down on the DOM tree) for more then two levels.
+
+Instead use useContext hook. 
+
+const NoteContext = createContext(); 
+
+// -> NoteContext.Provider: React.Component.  -> the main distrubuiter. 
+    - <NoteContext.Provider value={{<will be passed down this root component>}}>
+        // * Instead of the prop-drilling, any coomponent down this NODE will hava access to the value prop
+        </NoteContext.Provider>
+    - Can be accessed using the useContext hook passing the NoteContext as an argument. 
+    - const {removeNote, notes} = useContext(NoteContext) -> return the value prop.;
+
+
+
+// Advancer React: 
+
+
+Custem hooks: Reusability cooncept on Hooks. 
+    - goes by the function name use + HookName.  
+
+Props passed into the function may contain missing data and when distructure it, these missing data  will be assigned to undefined. 
+Hence, one way is to use the PropTypes package from React. 
+    - import PropTypes from 'prop-types'; 
+        - Compoentname.PropTypes = {
+            property-name: PropTypes.DT.isRequired
+        };
+        - Compoentname.defaultProps = {
+            property-name: some-default-value
+
+        }
+
+// 8.51
+
